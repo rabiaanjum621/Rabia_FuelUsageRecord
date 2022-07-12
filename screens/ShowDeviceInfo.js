@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     formWrapper: {
         flex: 1,
         display: "flex",
-        justifyContent: "center",
         padding: 30,
         backgroundColor: '#f4f4f4',
         flexDirection: "column",

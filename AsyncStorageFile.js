@@ -1,21 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-function fuelStore(){
-    let fuelData = [
-        {
-            fuelType: "Petrol",
-            pricePerLiter: 30
-        },
-        {
-            fuelType: "Diesel",
-            pricePerLiter: 40
-        },
-        {
-            fuelType: "Battery Charge",
-            pricePerLiter: 10
-        },
-    ]
-    AsyncStorage.setItem("fuelData", JSON.stringify(fuelData))
-    AsyncStorage.setItem("userMaxAllowance", JSON.stringify(300))
+import { NativeModules } from 'react-native';
+
+const { ReactOneCustomMethod } = NativeModules;
+const fuelStore = () => {
+    ReactOneCustomMethod.getFuelData()
+            .then((res) => {
+                AsyncStorage.setItem("fuelData", JSON.stringify(res.data))
+                AsyncStorage.setItem("userMaxAllowance", JSON.stringify(res.userMaxAllowance))
+            })
 }
 
 const getFuelDataStore = (callback) => {

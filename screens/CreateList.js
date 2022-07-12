@@ -4,6 +4,7 @@ import {
   View,
   TextInput,
   StyleSheet,
+  NativeModules
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { getFuelDataStore } from "../AsyncStorageFile";
@@ -15,10 +16,15 @@ const CreateList = (props) => {
   const navigation = useNavigation();
   const route = useRoute();
   const [getFuelData, setFuelData] = useState([]);
+  const [getBalance, setBalance] = useState();
   const [item, setItem] = useState();
+  const { ReactOneCustomMethod } = NativeModules;
+
 
   useEffect(() => {
     getFuelDataStore((finalData) => {
+     setBalance(route.params.userMaxAllowance)
+     console.log("final data " + finalData.userMaxAllowance);
         setItem({ label: finalData.fuelData[0].fuelType, value: finalData.fuelData[0].pricePerLiter });
         setFuelData(finalData.fuelData.map((obj) => { return { label: obj.fuelType, value: obj.pricePerLiter.toString() } }))
     })
@@ -26,20 +32,26 @@ const CreateList = (props) => {
 
   const createItem =() =>{
     let total = parseFloat(inputValue) * item.value;
-    if (total < route.params.userMaxAllowance) {
-        let data = {
-            id: Date.now() + Math.random(),
-            type: item.label,
-            price: total,
-            used: parseFloat(inputValue)
-        }
-        let finalBalance = route.params.userMaxAllowance - total; 
-        route.params.handleAddFuel({data, finalBalance})
-        alert("Added successfully")
-        navigation.navigate("ListPage")
-    } else {
-        alert("Don't have balance")
-    }
+    let obj = {
+      userMaxAllowance: getBalance,
+      total: total
+  }
+  ReactOneCustomMethod.checkBalance(obj)
+      .then((res) => {
+          if (res) {
+              let data = {
+                  id: Date.now() + Math.random(),
+                  type: item.label,
+                  price: total,
+                  quantity: parseFloat(inputValue)
+              }
+              route.params.handleAddFuel({ data })
+              alert("Item Added successfully")
+              navigation.navigate("ListPage")
+          } else {
+              alert("You are running out of balance")
+          }
+      });
 }
 
 

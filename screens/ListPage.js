@@ -11,7 +11,7 @@ import {
 import Btn from "../components/Btn";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { fuelStore } from "../AsyncStorageFile"
+import { getFuelDataStore } from "../AsyncStorageFile";
 import { useNavigation } from "@react-navigation/native";
 
 
@@ -23,7 +23,7 @@ const ListPage = (props) => {
     used: 1
   }
   const [getFuelList, setFuelList] = useState([]);
-  const [getBalance, setBalance] = useState(400);
+  const [getBalance, setBalance] = useState(600);
   const [getDeviceId, setDeviceId] = useState("");
   const [getDeviceType, setDeviceType] = useState("");
   const { ReactOneCustomMethod } = NativeModules;
@@ -33,8 +33,10 @@ const ListPage = (props) => {
   };
 
   useEffect(() => {
-    fuelStore()
-    console.log("Caaling NM");
+    getFuelDataStore((finalData) => {
+      setBalance(finalData.userMaxAllowance)
+  });
+
     ReactOneCustomMethod.getPhoneID()
       .then((res: string) => {
         setDeviceId(res);
@@ -83,8 +85,8 @@ const ListPage = (props) => {
   }
 
   const handleAddFuel = (data) => {
-    console.log("handleAddFuel");
-    setBalance(data.finalBalance)
+    let totalBalance = getBalance - data.data.price
+    setBalance(totalBalance)
     let newItem = data.data
     setFuelList((prev) => [
       ...prev,
