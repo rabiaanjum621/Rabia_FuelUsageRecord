@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/Login"
 import ListPage from "./screens/ListPage"
 import CreateList from "./screens/CreateList";
+import ShowDeviceInfo from "./screens/ShowDeviceInfo"
 import SignUpScreen from "./screens/SignUp"
 import {getDatabase} from "firebase/database"
 import { createStore } from "redux";
@@ -19,18 +20,19 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const database = getDatabase(app);
   return (
-    // <Provider store={store}>
+
     <NavigationContainer>
       {
         <Stack.Navigator>
           <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ListPage" component={ListPage} />
           <Stack.Screen name="CreateList" component={CreateList} />
+          <Stack.Screen name="ShowDeviceInfo" component={ShowDeviceInfo} />
           <Stack.Screen name="Sign Up" component={SignUpScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
         }
     </NavigationContainer>
-    // </Provider>
+
   );
       }
 

@@ -106,6 +106,10 @@ const ListPage = (props) => {
           { userMaxAllowance: getBalance, handleAddFuel: handleAddFuel })
         }
         style={{ width: "40%", backgroundColor: "#808080", borderRadius: 10, marginLeft: 170 }} />
+           <Btn title="ShowDeviceInfo"
+        onClick={() => navigations.navigate('ShowDeviceInfo')
+        }
+        style={{ width: "50%", backgroundColor: "#808080", borderRadius: 10, marginLeft: 170 }} />
       <View style={{ marginLeft: 90, marginVertical: 10 }}>
         <Text style={styles.textHeading}>User Allowance Remaining: {getBalance}</Text>
       </View>
