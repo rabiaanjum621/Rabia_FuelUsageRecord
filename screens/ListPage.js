@@ -6,22 +6,21 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  NativeModules
+  NativeModules,
 } from "react-native";
 import Btn from "../components/Btn";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { getFuelDataStore } from "../AsyncStorageFile";
 import { useNavigation } from "@react-navigation/native";
-
+import { fuelStore, getFuelDataStore } from "../AsyncStorageFile";
 
 const ListPage = (props) => {
   const navigations = useNavigation();
   let item = {
     type: "PETROL",
     price: 30,
-    used: 1
-  }
+    used: 1,
+  };
   const [getFuelList, setFuelList] = useState([]);
   const [getBalance, setBalance] = useState(600);
   const [getDeviceId, setDeviceId] = useState("");
@@ -33,9 +32,11 @@ const ListPage = (props) => {
   };
 
   useEffect(() => {
+    fuelStore();
+    console.log("List page useEffect called");
     getFuelDataStore((finalData) => {
-      setBalance(finalData.userMaxAllowance)
-  });
+      setBalance(finalData.userMaxAllowance);
+    });
 
     ReactOneCustomMethod.getPhoneID()
       .then((res: string) => {
@@ -60,12 +61,12 @@ const ListPage = (props) => {
   }, []);
 
   const removeItem = (item) => {
-    let updatedList = getFuelList.filter((obj) => obj.id !== item.id)
-    setFuelList(updatedList)
+    let updatedList = getFuelList.filter((obj) => obj.id !== item.id);
+    setFuelList(updatedList);
     let updatedBalance = getBalance + item.price;
-    setBalance(updatedBalance)
-    Alert.alert("Removed successfully")
-  }
+    setBalance(updatedBalance);
+    Alert.alert("Removed successfully");
+  };
 
   const _renderItem = ({ item }) => {
     return (
@@ -81,77 +82,94 @@ const ListPage = (props) => {
           </TouchableOpacity>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
-  const handleAddFuel = (data) => {
-    let totalBalance = getBalance - data.data.price
-    setBalance(totalBalance)
-    let newItem = data.data
+  const handleAddFuel = (addedItem) => {
+    let totalBalance = getBalance - addedItem.data.price;
+    setBalance(totalBalance);
+    let newItem = addedItem.data;
     setFuelList((prev) => [
       ...prev,
       {
         id: newItem.id,
         type: newItem.type,
         price: newItem.price,
-        used: newItem.used
-      }
-    ])
-  }
+        used: newItem.used,
+      },
+    ]);
+  };
+
+  const handleCreate = () => {
+      navigations.navigate("CreateList", {
+        userMaxAllowance: getBalance,
+        handleAddFuel: handleAddFuel,
+      });
+  };
 
   return (
     <View style={styles.view}>
       <Text style={styles.textHeading}>Device Id: {getDeviceId}</Text>
-      <Text style={styles.textHeading}>Device Type:  {getDeviceType}</Text>
-      <Btn title="Create List"
-        onClick={() => navigations.navigate('CreateList',
-          { userMaxAllowance: getBalance, handleAddFuel: handleAddFuel })
-        }
-        style={{ width: "40%", backgroundColor: "#808080", borderRadius: 10, marginLeft: 170 }} />
-           <Btn title="ShowDeviceInfo"
-        onClick={() => navigations.navigate('ShowDeviceInfo')
-        }
-        style={{ width: "50%", backgroundColor: "#808080", borderRadius: 10, marginLeft: 170 }} />
-      <View style={{ marginLeft: 90, marginVertical: 10 }}>
-        <Text style={styles.textHeading}>User Allowance Remaining: {getBalance}</Text>
-      </View>
-      <FlatList
-        data={getFuelList}
-        renderItem={_renderItem}
+      <Text style={styles.textHeading}>Device Type: {getDeviceType}</Text>
+      <Btn
+        title="Create List"
+        onClick={handleCreate}
+        style={{
+          width: "40%",
+          backgroundColor: "#808080",
+          borderRadius: 10,
+          marginLeft: 170,
+        }}
       />
+      <Btn
+        title="ShowDeviceInfo"
+        onClick={() => navigations.navigate("ShowDeviceInfo")}
+        style={{
+          width: "50%",
+          backgroundColor: "#808080",
+          borderRadius: 10,
+          marginLeft: 170,
+        }}
+      />
+      <View style={{ marginLeft: 90, marginVertical: 10 }}>
+        <Text style={styles.textHeading}>
+          User Allowance Remaining: {getBalance}
+        </Text>
+      </View>
+      <FlatList data={getFuelList} renderItem={_renderItem} />
 
       <Btn title="Log Out" onClick={signMeOut} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   view: {
     flex: 1,
     display: "flex",
     padding: 15,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     flexDirection: "column",
   },
   nestedView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     borderWidth: 2,
-    borderColor: 'grey',
+    borderColor: "grey",
     padding: 10,
     marginVertical: 10,
   },
   textStyle: {
     marginVertical: 5,
-    color: 'black',
+    color: "black",
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   textHeading: {
     marginVertical: 5,
-    color: 'black',
+    color: "black",
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
 });
 

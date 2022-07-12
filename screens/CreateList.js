@@ -24,7 +24,7 @@ const CreateList = (props) => {
   useEffect(() => {
     getFuelDataStore((finalData) => {
      setBalance(route.params.userMaxAllowance)
-     console.log("final data " + finalData.userMaxAllowance);
+     console.log("final data " + route.params.userMaxAllowance);
         setItem({ label: finalData.fuelData[0].fuelType, value: finalData.fuelData[0].pricePerLiter });
         setFuelData(finalData.fuelData.map((obj) => { return { label: obj.fuelType, value: obj.pricePerLiter.toString() } }))
     })
@@ -45,6 +45,7 @@ const CreateList = (props) => {
                   price: total,
                   quantity: parseFloat(inputValue)
               }
+              
               route.params.handleAddFuel({ data })
               alert("Item Added successfully")
               navigation.navigate("ListPage")
